@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'nanoml'
+project = 'nano-learn'
 copyright = '2021, Ludek Cizinsky'
 author = 'Ludek Cizinsky'
 
