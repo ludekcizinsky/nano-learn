@@ -1,10 +1,13 @@
-Welcome to nano-learn's documentation!
-======================================
+Nano-learn docs
+***************
 
 About the project
 =================
-To be added.
 
-Get started
-=================
-To be added.
+Nano-learn is my attempt to write a light weight machine learning library from scatch. To see the api overview, you cen get started in :ref:`Reference`.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   reference/index
