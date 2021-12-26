@@ -1,1 +1,2 @@
-# nano-learn
+# nano-em-el
+Collection of ML algorithms
