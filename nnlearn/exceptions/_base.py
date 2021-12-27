@@ -19,3 +19,19 @@ class DimensionMismatchError(Error):
     
     def __repr__(self):
         return self.message
+
+class CriterionFunctionNotFound(Error):
+    """
+    Specified Criterion Function was not found.
+
+    Parameters
+    ----------
+    message : str
+        Explanation of what happened.
+    """
+
+    def __init__(self, message):
+        self.message = message
+    
+    def __repr__(self):
+        return self.message

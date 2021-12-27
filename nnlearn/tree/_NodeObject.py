@@ -1,35 +1,19 @@
-from collections import Counter
-from nnlearn.datasets import load_iris
-from nnlearn.metrics import accuracy_score
-import numpy as np
-
-
 class Node:
 
-    def __init__(self, **kwargs) -> None:
-        self.X = kwargs.get("X")
-        self.y = kwargs.get("y")
-        self.impurity = kwargs.get("impurity")
+    def __init__(self, X, y, tree, impurity=None, **kwargs):
+        self.X = X
+        self.y = y
         self.n = len(self.y)
-        self.criterion_name = kwargs.get("criterion")
-        self.criterion = None
+        self.tree = tree
+        self.impurity = impurity
         self.left = None
         self.right = None
         self.threshold = None
         self.feature = None
 
-        # Set up criterion
-        if self.criterion_name:
-            if self.criterion_name == "gini":
-                self.criterion = self.gini
-        else:
-            self.criterion = self.gini
-
     def split(self):
 
         if not self.is_leaf_node():
-
-            print("Splitting node...\n")
 
             # Save the results as follows: [feature_id, (metadata)]
             results = []
@@ -50,20 +34,18 @@ class Node:
 
                     # Split the labels accordingly, and compute gini for both nodes
                     left = self.y[self.X[:, j] < dcb]
-                    left_imp = self.criterion(left)
+                    left_imp = self.tree.criterion(left)
                     right = self.y[self.X[:, j] > dcb]
-                    right_imp = self.criterion(right)
+                    right_imp = self.tree.criterion(right)
                     if len(left) == 0 or len(right) == 0:
                         pass
 
                     # Combine the results using weighted average, and save it
-                    total = (len(left)/self.n)*left_imp + \
-                        (len(right)/self.n)*right_imp
+                    total = (len(left)/self.n)*left_imp + (len(right)/self.n)*right_imp
                     impurities.append((dcb, total, left_imp, right_imp))
 
                 # Sort the impurities and choose the boundary with highest impurity
-                imp_sorted = sorted(
-                    impurities, key=lambda x: x[1], reverse=False)
+                imp_sorted = sorted(impurities, key=lambda x: x[1], reverse=False)
                 results.append([j] + list(imp_sorted[0]))
 
             # Get the best feature based on impurity
@@ -79,50 +61,30 @@ class Node:
             # * Left
             if (self.impurity is None) or (self.impurity is not None and left_imp < self.impurity):
 
-                print("Creating left node")
-
                 # ** Prepare the data
                 left_mask = self.X[:, self.feature] < self.threshold
                 left_X, left_y = self.X[left_mask], self.y[left_mask]
 
-                print(left_imp)
-                print(left_y)
-                print()
                 # ** Add left child
                 self.left = Node(X=left_X,
                                  y=left_y,
-                                 criterion=self.criterion_name,
+                                 tree=self.tree,
                                  impurity=left_imp)
                 self.left.split()
 
             # * Right
             if (self.impurity is None) or (self.impurity is not None and right_imp < self.impurity):
 
-                print("Creating right node")
-
                 # ** Prepare the data
                 right_mask = self.X[:, self.feature] > self.threshold
                 right_X, right_y = self.X[right_mask], self.y[right_mask]
 
-                print(right_imp)
-                print(right_y)
-                print()
                 # ** Add right child
                 self.right = Node(X=right_X,
                                   y=right_y,
-                                  criterion=self.criterion_name,
+                                  tree=self.tree,
                                   impurity=right_imp)
                 self.right.split()
-
-    def gini(self, y):
-
-        counts = Counter(y)
-        n = len(y)
-        result = 0
-        for count in counts.values():
-            result += (count/n)*(1 - count/n)
-
-        return result
 
     def is_leaf_node(self):
         if len(self.y) == 1:
@@ -131,45 +93,3 @@ class Node:
             return True
         else:
             return False
-
-
-class DT:
-
-    def __init__(self, X, y) -> None:
-        self.root = Node(X=X, y=y)
-
-    def fit(self):
-        print("Started training...\n")
-        self.root.split()
-        print("Training succesful!\n")
-
-    def predict(self, X):
-
-        result = []
-        for x in X:
-            result.append(self.get_prediction(x, self.root))
-
-        return result
-
-    def get_prediction(self, x, node):
-
-        if not node.is_leaf_node():
-
-            if x[node.feature] > node.threshold and node.right:
-                return self.get_prediction(x, node.right)
-            elif x[node.feature] < node.threshold and node.left:
-                return self.get_prediction(x, node.left)
-
-        return sorted([(key, value) for key, value in Counter(node.y).items()], reverse=True, key=lambda x: x[1])[0][0]
-
-
-if __name__ == "__main__":
-
-
-    # Test
-    X, y = load_iris()
-    dt = DT(X, y)
-    dt.fit()
-    predicted = np.array(dt.predict(X))
-    print("Accuracy score")
-    print(accuracy_score(y, predicted))
