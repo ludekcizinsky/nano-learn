@@ -1,5 +1,5 @@
-from nnlearn.util import _convert_to_np_arr
-from nnlearn.exceptions import DimensionMismatchError
+from util import _convert_to_np_arr
+from exceptions import DimensionMismatchError
 from collections import Counter
 
 def accuracy_score(y_true, y_hat, **kwargs):

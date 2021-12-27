@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
-from nnlearn.config.definitions import ROOT_DIR
+from config.definitions import ROOT_DIR
 
 def load_iris(*args, **kwargs):
 
