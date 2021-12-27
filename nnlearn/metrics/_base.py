@@ -40,7 +40,7 @@ def gini_score(y):
     """
     Measure of `Gini impurity`.
 
-    Paramaters
+    Parameters
     ----------
     y : 1d array
         Labels of classes.

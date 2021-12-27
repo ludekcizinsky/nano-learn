@@ -13,6 +13,11 @@ author = 'Ludek Cizinsky'
 # The full version, including alpha/beta/rc tags
 release = 'September 2021'
 
+# -- Path setup --------------------------------------------------------------
+import sys
+import os
+sys.path.insert(0, os.path.abspath('../../nnlearn'))
+
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
