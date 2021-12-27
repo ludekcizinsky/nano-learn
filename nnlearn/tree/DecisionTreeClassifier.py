@@ -1,6 +1,6 @@
 from collections import Counter
 from nnlearn.datasets import load_iris
-from sklearn.metrics import accuracy_score
+from nnlearn.metrics import accuracy_score
 import numpy as np
 
 
@@ -164,6 +164,7 @@ class DT:
 
 
 if __name__ == "__main__":
+
 
     # Test
     X, y = load_iris()

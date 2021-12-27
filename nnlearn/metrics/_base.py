@@ -28,9 +28,9 @@ def accuracy_score(y_true, y_hat, **kwargs):
 
     y_true, y_hat = _convert_to_np_arr(y_true), _convert_to_np_arr(y_hat)
 
-    if y_true.shape[0] != y_hat.shape[1]:
+    if y_true.shape[0] != y_hat.shape[0]:
         raise DimensionMismatchError(f'y_true has shape {y_true.shape} and {y_hat.shape}. They both bust be one dimensional and of same length.')
 
-    return (y_true == y_hat).sum()
+    return (y_true == y_hat).sum()/y_true.shape[0]
 
 

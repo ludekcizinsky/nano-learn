@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import pandas as pd
 import numpy as np
+import os
+from nnlearn.config.definitions import ROOT_DIR
 
 def load_iris(*args, **kwargs):
 
@@ -24,8 +24,9 @@ def load_iris(*args, **kwargs):
     1darray
         Ground truth values.
     """
-
-    raw = pd.read_csv('nnlearn/datasets/data/iris.data', header=0).to_numpy()
+    
+    filepath = os.path.join(ROOT_DIR, 'datasets', 'data','iris.data')
+    raw = pd.read_csv(filepath, header=0).to_numpy()
     X = raw[:, :-1].astype(float)
     y = raw[:, -1].astype(str)
 
