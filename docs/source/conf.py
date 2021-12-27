@@ -16,7 +16,7 @@ release = 'September 2021'
 # -- Path setup --------------------------------------------------------------
 import sys
 import os
-sys.path.insert(0, os.path.abspath('../../nnlearn'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- General configuration ---------------------------------------------------
 
@@ -25,12 +25,15 @@ sys.path.insert(0, os.path.abspath('../../nnlearn'))
 # ones.
 extensions = [
     'sphinx.ext.duration',
-    'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
+    'sphinx.ext.mathjax'
 ]
+
+# Todo extension
+todo_include_todos=True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
