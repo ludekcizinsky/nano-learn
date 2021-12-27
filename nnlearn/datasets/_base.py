@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
-from config.definitions import ROOT_DIR
+from nnlearn.config.definitions import ROOT_DIR
 
 def load_iris(*args, **kwargs):
 
@@ -19,9 +19,9 @@ def load_iris(*args, **kwargs):
 
     Returns
     -------
-    2darray
+    X : 2darray
         Feature dataset.
-    1darray
+    y : 1darray
         Ground truth values.
     """
     

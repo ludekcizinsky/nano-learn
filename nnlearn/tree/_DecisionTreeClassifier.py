@@ -9,6 +9,39 @@ from sklearn.model_selection import train_test_split
 
 class DecisionTreeClassifier:
 
+    """
+    The `DecisionTreeClassifier` is a tree based ML model used for classification.
+
+    Parameters
+    ----------
+    criterion_name : str, optional
+        Name of the metric based on which to define purity of tree nodes.
+    splitter : str, optional
+        Name of the method to use for splitting nodes.
+    max_depth : int, optional
+        Maximum depth of the tree.
+    min_samples_split : int, optional
+        Minimum number of samples present within given node in order for it to become an internal node.
+    min_samples_leaf : int, optional
+        Mimimum number of leaves to be present within a leaf.
+    max_features : int, optional
+        Maximum number of features to take into account when deciding on how to split the node.
+    random_state : int, optional
+        When you are not using all features to split the node and only selecting randomly a subset, then this will ensure reproducibility.
+    max_leaf_nodes : int, optional
+        What is the maximum of leaf nodes given tree can have.
+    min_impurity_decrease : float, optional
+        What is the minimum amount of impurity decrease for which is worth to split the given node.
+
+    Todo
+    ----
+
+    - Implement min_impurity_decrease.
+
+    - Implement min_samples_split.
+
+    """
+
     def __init__(self,
                 criterion_name='gini',
                 splitter="best",
@@ -34,7 +67,6 @@ class DecisionTreeClassifier:
 
         self.classes = None
         self.n_features_in = None
-        self.feature_names_in = None
         self.n_outputs = None
     
     def fit(self, X, y):
@@ -49,6 +81,10 @@ class DecisionTreeClassifier:
         y : 1d array
             Ground truth values.
         """
+        
+        self.classes = np.unique(y)
+        self.n_features_in = X.shape[1]
+        self.n_outputs = X.shape[1]
 
         self.tree.root = Node(X, y, self.tree)
         self.tree.root.split()
@@ -74,7 +110,3 @@ class DecisionTreeClassifier:
             result.append(self.tree._get_prediction(x, self.tree.root))
 
         return np.array(result)
-
-
-if __name__ == "__main__":
-    pass

@@ -1,5 +1,31 @@
 class Node:
 
+    """
+    Node object serves as a core element as part of the deciosion tree data structure.
+
+    Parameters
+    ----------
+    X : 2d array
+        Records which the given nodes holds.
+    y : 1d array
+        Labels for the records.
+    tree : :class:`DecisionTree`
+        Decision tree object.
+    impurity: float, optional
+        Impurity of this node.
+    
+    Attributes
+    ----------
+    left : :class:`Node`
+        Left child.
+    right : :class:`Node`
+        Right child.
+    threshold : float
+        Value where to make split.
+    feature : int
+        Index of feature within ``X`` based on which to do the split.
+    """
+
     def __init__(self, X, y, tree, impurity=None, **kwargs):
         self.X = X
         self.y = y
