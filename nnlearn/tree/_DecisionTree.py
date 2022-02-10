@@ -1,4 +1,4 @@
-from nnlearn.metrics import gini_score
+from nnlearn.metrics import gini_score, entropy_score
 from nnlearn.exceptions import CriterionFunctionNotFound
 from collections import Counter
 
@@ -66,5 +66,7 @@ class DecisionTree:
 
         if self.criterion_name == "gini":
                 self.criterion = gini_score
+        elif self.criterion_name == "entropy":
+            self.criterion = entropy_score
         else:
             raise CriterionFunctionNotFound(f'Specified function {self.criterion_name} is NOT implemented. Please specify a function which is implemented.')

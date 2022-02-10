@@ -140,5 +140,9 @@ def information_gain_score(x, y):
     that given ``X``, we know a lot about ``Y``. In other words, the more
     we reduce entropy (disorder) of our target variable ``Y``, the larger
     the information gain is.
+
+    Todo
+    ----
+    - Implement this function.
     """
     pass
