@@ -1,28 +1,41 @@
+
+"""
+Disclaimer: This code is based on sklearn implementation.
+"""
+
 from collections import defaultdict
 from functools import partial
 import numpy as np
 import scipy as sp
+
 
 __all__ = [
     "CountVectorizer"
     ]
 
 
-def _analyze(doc, tokenizer=None):
+def _analyze(doc, tokenizer=None, ngram=None):
     
   if tokenizer is not None:
-    doc = tokenizer(doc)
+    try:
+      doc = tokenizer(doc)
+    except Exception as e:
+      doc = doc.split(" ")
+  
+  if ngram is not None:
+    doc = ngram(doc)
 
   return doc
 
 
 class CountVectorizer:
 
-  def __init__(self, tokenizer, binary=False):
+  def __init__(self, tokenizer=None, binary=False, ngram_range=(1, 1), analyzer="word"):
     self.tokenizer = tokenizer
-    self.analyzer = "word"
+    self.analyzer = analyzer
     self._vocab = None
     self.binary = binary
+    self.ngram_range = ngram_range
 
   def fit(self, raw_docs, y=None):
     
@@ -47,7 +60,7 @@ class CountVectorizer:
   def transform(self, raw_docs):
     
     if not self._vocab:
-      raise ValueError("The model has not been fitted yet, therefore not vocab available.")
+      raise ValueError("The model has not been fitted yet, therefore no vocabulary available.")
     
     voc, X = self.fit_transform(raw_docs, fixed_vocab=True)
 
@@ -122,19 +135,60 @@ class CountVectorizer:
     if self.binary:
       X.data.fill(1)
 
+    # Sort the indices so you can use it with vocab
+    X.sort_indices()
+
     return vocabulary, X
 
   def _build_analyzer(self):
     
     if self.analyzer == "word":
       return partial(_analyze, tokenizer=self.tokenizer)
+    elif self.analyzer == "char":
+      return partial(_analyze, ngram=self._char_ngrams)
     else:
-      raise ValueError(f"There is no analyzer called {self.analyzer} Currently available options are: word.")
+      raise ValueError(f"There is no analyzer called {self.analyzer}. Currently available options are: word and char.")
 
-  def _analyze(self, doc, tokenizer=None):
+  
+  def _char_ngrams(self, doc):
+    """Tokenize doc into a sequence of character n-grams.
+
+    Parameters
+    ----------
+    doc : str
+      Document from which to extract n-gram char features.
+
+    Returns
+    -------
+    doc : list
+      List with tokens.
+    """
     
-    if tokenizer is not None:
-      doc = tokenizer(doc)
+    # Get important input info which will be used later
+    text_len = len(doc)
+    min_n, max_n = self.ngram_range
 
-    return doc
+    # No need to do any slicing for unigrams, just iterate through the string
+    if min_n == 1:
+        ngrams = list(doc)
+        min_n += 1
+    else:
+        ngrams = []
 
+    # Bind append method outside of loop to reduce overhead
+    ngrams_append = ngrams.append
+    
+    # Upper boundary practical example:
+    # text_len = 20, max_n = 3 --> choose 3
+    # text_len = 2, max_n = 3 --> choose 2
+    for n in range(min_n, min(max_n + 1, text_len + 1)): 
+        for i in range(text_len - n + 1):
+            ngrams_append(doc[i : i + n])
+
+    return ngrams
+
+  def get_feature_names(self):
+    return np.asarray(
+        [t for t, i in sorted(self._vocab.items(), key=lambda x: x[1])],
+        dtype=object,
+    )
