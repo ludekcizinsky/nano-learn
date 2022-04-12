@@ -8,11 +8,9 @@ def test_dt_classifier():
     print('='*50)
     X, y = load_iris()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(max_features=1)
     clf.fit(X_train, y_train)
     y_hat = clf.predict(X_test)
     print(f'Accuracy score: {accuracy_score(y_test, y_hat)}')
     print('='*50)
 
-if __name__ == '__main__':
-    test_dt_classifier()

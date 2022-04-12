@@ -71,18 +71,16 @@ def gini_score(y):
     return result
 
 
-def entropy_score(y, x=None):
+def entropy_score(y):
 
     """
-    Measure of ``Entropy``.
+    Measure of ``Entropy`` of a random variable Y.
 
     Parameters
     ----------
     y : 1d array
         Labels of classes.
-    x : 1d array
-        An attribute array from the given feature matrix X.
-    
+        
     Returns
     -------
     float
@@ -104,15 +102,12 @@ def entropy_score(y, x=None):
     where ``c`` is number of classes you have.
     """
 
-    e = 0
-    if x is None:
-        for c in np.unique(y):
-            pi = y[y == c].shape[0] / y.shape[0]
-            e += -pi*np.log2(pi)
-    else:
-        pass
-    
-    return e
+    ent = 0 
+    for c in np.unique(y):
+        pi = y[y == c].shape[0] / y.shape[0]
+        ent += -pi*np.log2(pi)
+   
+    return ent
 
 def information_gain_score(x, y):
 
@@ -121,10 +116,10 @@ def information_gain_score(x, y):
 
     Parameters
     ----------
-    x : 1d array
-        An attribute array from the given feature matrix X.
-    y : 1d array
-        Labels of classes.
+    y1 : 1d array
+        Labels of classes in the parent node.
+    y2 : 1d array
+        Labels of classes after the split of the parent node.
 
     Notes
     -----
@@ -139,10 +134,8 @@ def information_gain_score(x, y):
     where ``E`` refers to :func:`entropy_score`. If the IG is low, it means
     that given ``X``, we know a lot about ``Y``. In other words, the more
     we reduce entropy (disorder) of our target variable ``Y``, the larger
-    the information gain is.
-
-    Todo
-    ----
-    - Implement this function.
+    the information gain is.k
     """
-    pass
+    
+    return entropy_score(y1) - entropy_score(y2)
+

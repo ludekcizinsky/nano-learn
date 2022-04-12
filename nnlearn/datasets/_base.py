@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
 import os
-from nnlearn.config.definitions import ROOT_DIR
+
+ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+
 
 def load_iris(*args, **kwargs):
 
@@ -36,3 +38,4 @@ def load_iris(*args, **kwargs):
     y = new_y
 
     return X, y
+

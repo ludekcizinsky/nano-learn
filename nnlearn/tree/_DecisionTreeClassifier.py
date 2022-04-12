@@ -15,11 +15,7 @@ class DecisionTreeClassifier:
     Parameters
     ----------
     criterion_name : str, optional
-        Name of the metric based on which to define purity of tree nodes.
-    splitter : str, optional
-        Name of the method to use for splitting nodes.
-    max_depth : int, optional
-        Maximum depth of the tree.
+        Name of the metric based on which to define purity of tree nodes. Options: {'gini', 'entropy'}
     min_samples_split : int, optional
         Minimum number of samples present within given node in order for it to become an internal node.
     min_samples_leaf : int, optional
@@ -28,41 +24,20 @@ class DecisionTreeClassifier:
         Maximum number of features to take into account when deciding on how to split the node.
     random_state : int, optional
         When you are not using all features to split the node and only selecting randomly a subset, then this will ensure reproducibility.
-    max_leaf_nodes : int, optional
-        What is the maximum of leaf nodes given tree can have.
-    min_impurity_decrease : float, optional
-        What is the minimum amount of impurity decrease for which is worth to split the given node.
-
-    Todo
-    ----
-
-    - Implement min_impurity_decrease.
-
-    - Implement min_samples_split.
 
     """
 
     def __init__(self,
                 criterion_name='gini',
-                splitter="best",
-                max_depth=None,
                 min_samples_split=2,
-                min_samples_leaf=1,
                 max_features=None,
-                random_state=42,
-                max_leaf_nodes=None,
-                min_impurity_decrease=0):
+                random_state=42):
         
         self.tree = DecisionTree(
                 criterion_name=criterion_name,
-                splitter=splitter,
-                max_depth=max_depth,
                 min_samples_split=min_samples_split,
-                min_samples_leaf=min_samples_leaf,
                 max_features=max_features,
-                random_state=random_state,
-                max_leaf_nodes=max_leaf_nodes,
-                min_impurity_decrease=min_impurity_decrease
+                random_state=random_state
         )
 
         self.classes = None
@@ -110,3 +85,4 @@ class DecisionTreeClassifier:
             result.append(self.tree._get_prediction(x, self.tree.root))
 
         return np.array(result)
+

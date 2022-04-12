@@ -1,6 +1,5 @@
-
 """
-Disclaimer: This code is based on sklearn implementation.
+Disclaimer: This code is inspired from sklearn implementation.
 """
 
 from collections import defaultdict
@@ -192,3 +191,4 @@ class CountVectorizer:
         [t for t, i in sorted(self._vocab.items(), key=lambda x: x[1])],
         dtype=object,
     )
+
