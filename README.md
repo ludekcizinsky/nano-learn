@@ -9,3 +9,8 @@ request. Ideally, it is one of the things mentioned in `Issues`.
 ## Docs
 The documentation for this micro-library can be found [here]().
 
+## Todo (To be possible moved to issues)
+
+- [ ] Finish implementation of the Neural net
+- [ ] Provide command line interface for execution of the models
+

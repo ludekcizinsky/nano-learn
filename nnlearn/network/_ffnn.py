@@ -2,10 +2,10 @@ from _Nanograd import Var, _arr_to_var
 import numpy as np
 
 
-class NeuralNetwork:
+class FFNN:
 
     """
-    Neural network is a machine learning model which is used for all
+    Feed forward neural network is a machine learning model which is used for all
     kinds of tasks from regression to classification.
 
     This class serves as a high level API to setup and train neural network.
@@ -56,9 +56,14 @@ class NeuralNetwork:
 
     """
 
-    def __init__(self, layers, loss_func='mse', epochs=50, batch_size=1.0, shuffle=False, optimizer='gd'):
+    def __init__(self,
+        layers,
+        loss_func='mse',
+        epochs=50,
+        batch_size=1.0,
+        shuffle=False,
+        optimizer='gd'):
 
-        # User inputed attributes
         self.layers = layers
         self.loss_func = loss_func
         self.epochs = epochs
@@ -66,24 +71,17 @@ class NeuralNetwork:
         self.shuffle = shuffle
         self.optimizer = optimizer
 
-        # Derived attributes
-        # * Training dataset
-        self.X = None # Original
-        self.y = None # - || -
-        self.Xv = None # Uses Var object instead of numbers
-        self.yv = None # - || -
-        self.n = None # Number of training records
-        self.m = None # Number of features in the training dataset
+        self.n = None
+        self.m = None
     
-    def _initial_setup(self):
+    def _run_setup(self):
 
         """
         The goal of this function is to run all neccessary operations
         after client initialies this class.
         """
-
-        pass
-    
+        pass 
+ 
     def _preprocessing(self):
 
         """ 
@@ -99,7 +97,7 @@ class NeuralNetwork:
         self.Xv, self.yv = _arr_to_var(X), _arr_to_var(y)
 
         if isinstance(self.batch_size, float):
-            self.batch_size = int(self.n*self,batch_size)
+            self.batch_size = int(self.n*self.batch_size)
     
     def _get_batches(self):
 
@@ -143,7 +141,25 @@ class NeuralNetwork:
 
             self.Xv = self.Xv[rows_index]
             self.yv = self.yv[rows_index]
+
+    def _forward(self):
+        """Forward step through this neural net.
+
+        Returns
+        -------
+        res : 2d array
+          Each row represents corresponding prediction for given sample.
+        """
+
+        res = self.X
+        for l in self.layers:
+            res = l.step(res)
+        return res
     
+    def _zero_grads(self):
+        for l in self.layers:
+          l.zero_grads()
+
     def _train(self):
 
         for epoch in range(1, self.epochs + 1):
@@ -151,25 +167,25 @@ class NeuralNetwork:
             X_batches, y_batches = self._get_batches()
 
             for X, y in zip(X_batches, y_batches):
-                pass
-            
+                out = self._forward()
+ 
             self._reshuffle()
             
-
-        
-    
+ 
     def fit(self, X, y):
+        """Find the optimal parameters.
+
+        Parameters
+        ----------
+        X : 2d array 
+          Training data.
+        y : 1d array
+          Training labels.
+        """
         
-        # Update classes attributes
-        self.X, self.y = X, y
-
-        # Run preprocessing pipeline
-        self.preprocessing()
-
-        # Run training pipeline
-
-        
-
-    
+        self.n, self.m = X.shape
+        self._preprocessing()
+        self._train()
+ 
     def predict(self, X, y):
         pass
