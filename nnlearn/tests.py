@@ -6,10 +6,11 @@ sys.path.insert(0, ROOT_DIR)
 import warnings
 warnings.filterwarnings("ignore")
 
-from tests import test_dt_classifier
+from tests import test_dt_classifier, test_ffnn_classifier
 
 TESTS = {
-    "dt_classifier" : test_dt_classifier
+    "dt_classifier" : test_dt_classifier,
+    "ffnn_classifier" : test_ffnn_classifier
 }
 
 if __name__ == "__main__":
