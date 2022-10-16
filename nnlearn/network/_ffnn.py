@@ -1,8 +1,11 @@
-from _Nanograd import Var, _arr_to_var
 import numpy as np
 
+from nnlearn.metrics import mean_cross_entropy_score, mean_squared_error
+from nnlearn.nanograd import Var
+from ._base import Base
 
-class FFNN:
+
+class FFNN(Base):
 
     """
     Feed forward neural network is a machine learning model which is used for all
@@ -13,7 +16,7 @@ class FFNN:
     Parameters
     -----------
     layers : iterable
-        One dimensional iterable where each item is a :class:`Layer`.
+        One dimensional iterable where each item is a :class:`DenseLayer`.
     loss_func : str, optional
         Loss function to use for training.
     epochs : int, optional
@@ -62,17 +65,21 @@ class FFNN:
         epochs=50,
         batch_size=1.0,
         shuffle=False,
-        optimizer='gd'):
+        lr=.01):
+
+        Base.__init__(self)
 
         self.layers = layers
         self.loss_func = loss_func
         self.epochs = epochs
         self.batch_size = batch_size
         self.shuffle = shuffle
-        self.optimizer = optimizer
+        self.lr = lr
 
         self.n = None
         self.m = None
+
+        self._run_setup()
     
     def _run_setup(self):
 
@@ -80,12 +87,25 @@ class FFNN:
         The goal of this function is to run all neccessary operations
         after client initialies this class.
         """
-        pass 
+        
+        # Loss functions
+        if self.loss_func == 'mse':
+            self.loss_func = mean_squared_error
+        elif self.loss_func == 'cross_entropy':
+            self.loss_func = mean_cross_entropy_score
  
-    def _preprocessing(self):
+    def _preprocessing(self, X, y):
 
         """ 
-        Preprocesses provided training data.
+        Preprocceses provided training data.
+
+        Attributes
+        ----------
+        X : 2d array
+          Input feature matrix.
+
+        y : 1d array
+          Target values
 
         Notes
         -----
@@ -94,7 +114,7 @@ class FFNN:
         - Transform batch size from proportion to actual size if neccessary
         """
 
-        self.Xv, self.yv = _arr_to_var(X), _arr_to_var(y)
+        self.Xv, self.yv = self._arr_to_var(X), self._arr_to_var(y)
 
         if isinstance(self.batch_size, float):
             self.batch_size = int(self.n*self.batch_size)
@@ -119,7 +139,8 @@ class FFNN:
         while len(choices) > 0:
 
             size = min(self.batch_size, len(choices))
-            selected = np.random.choice(np.array(choices), size=size, replace=False)
+            a = np.array(list(choices))
+            selected = np.random.choice(a, size=size, replace=False)
 
             X_batches.append(self.Xv[selected])
             y_batches.append(self.yv[selected])
@@ -142,7 +163,7 @@ class FFNN:
             self.Xv = self.Xv[rows_index]
             self.yv = self.yv[rows_index]
 
-    def _forward(self):
+    def _forward(self, X):
         """Forward step through this neural net.
 
         Returns
@@ -151,14 +172,18 @@ class FFNN:
           Each row represents corresponding prediction for given sample.
         """
 
-        res = self.X
+        res = X
         for l in self.layers:
             res = l.step(res)
         return res
     
     def _zero_grads(self):
         for l in self.layers:
-          l.zero_grads()
+            l._zero_grads()
+
+    def _update_weights(self):
+        for l in self.layers:
+            l._update_weights(self.lr)
 
     def _train(self):
 
@@ -166,9 +191,30 @@ class FFNN:
 
             X_batches, y_batches = self._get_batches()
 
+            print(f"Epoch {epoch}\n---")
+            batch = 1
             for X, y in zip(X_batches, y_batches):
-                out = self._forward()
- 
+
+                # Predict
+                yhat = self._forward(X)
+
+                # Compute loss based on the prediction
+                loss = self.loss_func(y, yhat)
+                print(">> Batch {} loss: {:.3f}".format(batch, loss.v))
+
+                # reset gradients of variables to zero
+                self._zero_grads() 
+
+                # backward propagate 
+                loss.backward()
+
+                # update weights
+                self._update_weights()
+                
+                # Increase batch number
+                batch += 1
+
+            print()
             self._reshuffle()
             
  
@@ -184,7 +230,7 @@ class FFNN:
         """
         
         self.n, self.m = X.shape
-        self._preprocessing()
+        self._preprocessing(X, y)
         self._train()
  
     def predict(self, X, y):
