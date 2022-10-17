@@ -1,7 +1,13 @@
+import os 
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
+
 from nnlearn.tree import DecisionTreeClassifier
 from nnlearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
 from nnlearn.metrics import accuracy_score
+
+#TODO: implement own method
+from sklearn.model_selection import train_test_split
 
 def test_dt_classifier():
 
@@ -13,4 +19,7 @@ def test_dt_classifier():
     y_hat = clf.predict(X_test)
     print(f'Accuracy score: {accuracy_score(y_test, y_hat)}')
     print('='*50)
+
+if __name__ == '__main__':
+    test_dt_classifier()
 

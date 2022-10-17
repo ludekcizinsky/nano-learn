@@ -1,10 +1,15 @@
+import os 
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
+
 from nnlearn.network import FFNN, DenseLayer
 from nnlearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
 from nnlearn.metrics import accuracy_score
 
 # TODO: replace this with own implentation
 from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+
 
 def test_ffnn_classifier():
 
@@ -24,7 +29,7 @@ def test_ffnn_classifier():
 
     # Train the model 
     clf = FFNN(layers,
-               epochs = 100,
+               epochs = 1,
                loss_func='cross_entropy',
                batch_size=.5,
                lr=.9,
@@ -34,4 +39,8 @@ def test_ffnn_classifier():
     # Validate the model
     y_hat = clf.predict(X_test)
     print(f'Validation accuracy: {accuracy_score(y_test, y_hat)}')
+
+
+if __name__ == '__main__':
+    test_ffnn_classifier()
 
