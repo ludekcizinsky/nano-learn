@@ -1,6 +1,6 @@
 import numpy as np
 
-from nnlearn.metrics import mean_cross_entropy_score, mean_squared_error
+from nnlearn.metrics import mean_cross_entropy_score, mean_squared_error, accuracy_score
 from nnlearn.nanograd import Var
 from ._base import Base
 
@@ -94,7 +94,7 @@ class FFNN(Base):
         elif self.loss_func == 'cross_entropy':
             self.loss_func = mean_cross_entropy_score
  
-    def _preprocessing(self, X, y):
+    def _preprocessing(self, X, y=None):
 
         """ 
         Preprocceses provided training data.
@@ -104,7 +104,7 @@ class FFNN(Base):
         X : 2d array
           Input feature matrix.
 
-        y : 1d array
+        y : 1d array, optional
           Target values
 
         Notes
@@ -113,8 +113,10 @@ class FFNN(Base):
         - Transform training data into Var object
         - Transform batch size from proportion to actual size if neccessary
         """
-
-        self.Xv, self.yv = self._arr_to_var(X), self._arr_to_var(y)
+        if y is not None:
+          self.Xv, self.yv = self._arr_to_var(X), self._arr_to_var(y)
+        else:
+          self.Xv = self._arr_to_var(X)
 
         if isinstance(self.batch_size, float):
             self.batch_size = int(self.n*self.batch_size)
@@ -186,13 +188,15 @@ class FFNN(Base):
             l._update_weights(self.lr)
 
     def _train(self):
-
+        self._reshuffle()
         for epoch in range(1, self.epochs + 1):
 
             X_batches, y_batches = self._get_batches()
 
-            print(f"Epoch {epoch}\n---")
+            print(f"Epoch {epoch}")
+            print("="*23)
             batch = 1
+            losses = []
             for X, y in zip(X_batches, y_batches):
 
                 # Predict
@@ -201,6 +205,7 @@ class FFNN(Base):
                 # Compute loss based on the prediction
                 loss = self.loss_func(y, yhat)
                 print(">> Batch {} loss: {:.3f}".format(batch, loss.v))
+                losses.append(loss.v)
 
                 # reset gradients of variables to zero
                 self._zero_grads() 
@@ -214,6 +219,12 @@ class FFNN(Base):
                 # Increase batch number
                 batch += 1
 
+            print("-"*23) 
+            print(">> Mean loss: {:>8.3f}".format(sum(losses)/len(losses)))
+            getval = np.vectorize(lambda x: x.v)
+            yhat = np.argmax(getval(self._forward(self.Xv)), axis=1)
+            ytrue = getval(self.yv)
+            print(">> Accuracy: {:>9.3f}".format(accuracy_score(ytrue, yhat)))
             print()
             self._reshuffle()
             
@@ -233,5 +244,9 @@ class FFNN(Base):
         self._preprocessing(X, y)
         self._train()
  
-    def predict(self, X, y):
-        pass
+    def predict(self, X):
+        self._preprocessing(X)
+        yhat = self._forward(self.Xv)
+        getval = np.vectorize(lambda x: x.v)
+        return np.argmax(getval(yhat), axis=1)
+
