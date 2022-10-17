@@ -119,14 +119,11 @@ def entropy_score(y):
    
     return ent
 
-def cross_entropy_score(y, p):
+def cross_entropy_score(p):
     """Computation of cross entropy for given two vectors
 
     Parameters
-    ----------
-    y : int
-        True target class.
-    
+    ---------- 
     p : float
         Probability of true class.
 
@@ -135,7 +132,7 @@ def cross_entropy_score(y, p):
     Read about details `here <https://bit.ly/cross-entropy-explained/>`_.
     """
 
-    return -(y * p.log2())
+    return -(p.log2())
 
 def mean_cross_entropy_score(Y, P):
     """Computation of cross entropy for array of vectors
@@ -158,8 +155,8 @@ def mean_cross_entropy_score(Y, P):
     total = Var(0)
     for i in range(n.v):
       y = Y[i] # true class
-      p = P[i, y.v] # probability of the true class
-      total += cross_entropy_score(y, p)
+      p = P[i, y.v] # probability of the true class according to the model
+      total += cross_entropy_score(p)
 
     return total/n
 
