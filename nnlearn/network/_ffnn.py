@@ -1,9 +1,20 @@
 import numpy as np
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme()
+
+from rich.table import Table
+from rich.progress import track
+from rich.columns import Columns
+from rich.panel import Panel
+from rich.markdown import Markdown
+
 from nnlearn.metrics import mean_cross_entropy_score, mean_squared_error, accuracy_score
 from nnlearn.nanograd import Var
-from ._base import Base
+from nnlearn.util import ScriptInformation
 
+from ._base import Base
 
 class FFNN(Base):
 
@@ -40,27 +51,11 @@ class FFNN(Base):
     For example, if you are doing regression, then you only need one neuron
     in the output layer or if you are doing multiclass classification, then
     you need same number of neurons as there is distinct classes in the dataset.
-
-    ``Loss functions``
-    To be added.
-
-    ``Epoch, batch size``
-    To be added.
-
-    ``Training process``
-    To be added.
-
-    Todo
-    ----
-
-    - Complete notes section
-
-    - Make preprocessing section more robust
-
     """
 
     def __init__(self,
         layers,
+        logger,
         loss_func='mse',
         epochs=50,
         batch_size=1.0,
@@ -70,14 +65,20 @@ class FFNN(Base):
         Base.__init__(self)
 
         self.layers = layers
-        self.loss_func = loss_func
+        self.logger = ScriptInformation()
+        self.loss_func_name = loss_func
         self.epochs = epochs
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.lr = lr
-
+        
+        self.loss_func = None
         self.n = None
         self.m = None
+
+        self.table = None
+        self.fig = None
+        self.report = None
 
         self._run_setup()
     
@@ -89,57 +90,29 @@ class FFNN(Base):
         """
         
         # Loss functions
-        if self.loss_func == 'mse':
+        if self.loss_func_name == 'mse':
             self.loss_func = mean_squared_error
-        elif self.loss_func == 'cross_entropy':
+        elif self.loss_func_name == 'cross_entropy':
             self.loss_func = mean_cross_entropy_score
  
     def _preprocessing(self, X, y=None):
 
-        """ 
-        Preprocceses provided training data.
-
-        Attributes
-        ----------
-        X : 2d array
-          Input feature matrix.
-
-        y : 1d array, optional
-          Target values
-
-        Notes
-        -----
-        Following methods are applied:
-        - Transform training data into Var object
-        - Transform batch size from proportion to actual size if neccessary
-        """
+        # Turn values into Var instances
         if y is not None:
           self.Xv, self.yv = self._arr_to_var(X), self._arr_to_var(y)
         else:
           self.Xv = self._arr_to_var(X)
-
+        
+        # If batch size is fraction, turn into actual size
         if isinstance(self.batch_size, float):
             self.batch_size = int(self.n*self.batch_size)
     
-    def _get_batches(self):
+    def _get_batches(self): 
 
-        """
-        Splits the given training dataset into the
-        batches of given size.
-
-        Returns
-        -------
-        X_batches : list
-            List with batches where each batch is just a subsample of X.
-        y_batches : list
-            List with batches where each batch is just a subsample of y.
-        """
-        
         choices = set([i for i in range(self.n)])
         X_batches = []
         y_batches = []
         while len(choices) > 0:
-
             size = min(self.batch_size, len(choices))
             a = np.array(list(choices))
             selected = np.random.choice(a, size=size, replace=False)
@@ -153,12 +126,7 @@ class FFNN(Base):
     
     def _reshuffle(self):
 
-        """
-        Reshuffles the order of rows in the training dataset.
-        """
-
         if self.shuffle:
-
             rows_index = np.array([i for i in range(self.n)])
             np.random.shuffle(rows_index) # In-place
 
@@ -166,13 +134,6 @@ class FFNN(Base):
             self.yv = self.yv[rows_index]
 
     def _forward(self, X):
-        """Forward step through this neural net.
-
-        Returns
-        -------
-        res : 2d array
-          Each row represents corresponding prediction for given sample.
-        """
 
         res = X
         for l in self.layers:
@@ -180,21 +141,81 @@ class FFNN(Base):
         return res
     
     def _zero_grads(self):
+
         for l in self.layers:
             l._zero_grads()
 
     def _update_weights(self):
+
         for l in self.layers:
             l._update_weights(self.lr)
 
-    def _train(self):
-        self._reshuffle()
-        for epoch in range(1, self.epochs + 1):
+    def _eval_epoch(self, losses):
 
+        # Mean loss
+        mean_loss = sum(losses)/len(losses)
+        
+        # Accuracy
+        yhat = np.argmax(self.predict_proba(self.Xv), axis=1)
+        y = self._arr_to_val(self.yv)
+        acc = accuracy_score(y, yhat)
+
+        return mean_loss, acc
+
+    def _setup_report_table(self):
+        
+        self.table = table = Table()
+        self.table.add_column("Epoch", justify="center", style="subtle")
+        self.table.add_column("Loss", justify="center", style="rose")
+        self.table.add_column("Accuracy", justify="center", style="love")
+
+    def _create_report(self, losses, accuracies):
+        
+        # Define plot
+        self.fig, axs = plt.subplots(2, 1, sharex=True)
+        plt.tight_layout();
+        self.fig.subplots_adjust(wspace=0.2, hspace=.2);
+
+        # Define epochs
+        epochs = np.arange(1, self.epochs + 1, 1)
+
+        # Epochs vs loss
+        sns.lineplot(x=epochs, y=losses, ax=axs[0], label='loss')
+        axs[0].set_title("Epoch # vs loss")
+        axs[0].set_xlabel("Epoch")
+        axs[0].set_ylabel("Loss")
+        
+        # Epochs vs accuracy
+        sns.lineplot(x=epochs, y=accuracies, ax=axs[1], label='accuracy') 
+        axs[1].set_title("Epoch # vs accuracy")
+        axs[1].set_xlabel("Epoch")
+        axs[1].set_ylabel("Accuracy")
+        
+        # Create markdown
+        md = ""
+        md += "## Hyper-parameters\n"
+        md += "Following hyper-parameters have been used:\n"
+        md += f"- Epochs: {self.epochs}\n"
+        md += f"- Loss func: {self.loss_func_name}\n"
+        md += f"- Batch size: {self.batch_size}\n"
+        md += f"- LR: {self.lr}\n"
+        md += "## Training plot\n"
+        md += "📈 See training plot [here](training.png)\n"
+
+        panel_1 = Panel.fit(self.table, title="table of training", width=40)
+        panel_2 = Panel.fit(Markdown(md), title="training information", width=40)
+        self.report = Columns([panel_1, panel_2]) 
+
+    def _train(self):
+        
+        self._setup_report_table()
+
+        mean_losses = []
+        accuracies = []
+        for epoch in track(range(1, self.epochs + 1), "Training..."):
+            self._reshuffle()
             X_batches, y_batches = self._get_batches()
 
-            print(f"Epoch {epoch}")
-            print("="*23)
             batch = 1
             losses = []
             for X, y in zip(X_batches, y_batches):
@@ -204,7 +225,6 @@ class FFNN(Base):
 
                 # Compute loss based on the prediction
                 loss = self.loss_func(y, yhat)
-                print(">> Batch {} loss: {:.3f}".format(batch, loss.v))
                 losses.append(loss.v)
 
                 # reset gradients of variables to zero
@@ -218,16 +238,23 @@ class FFNN(Base):
                 
                 # Increase batch number
                 batch += 1
-
-            print("-"*23) 
-            print(">> Mean loss: {:>8.3f}".format(sum(losses)/len(losses)))
-            getval = np.vectorize(lambda x: x.v)
-            yhat = np.argmax(getval(self._forward(self.Xv)), axis=1)
-            ytrue = getval(self.yv)
-            print(">> Accuracy: {:>9.3f}".format(accuracy_score(ytrue, yhat)))
-            print()
-            self._reshuffle()
             
+            # Compute metrics for given epoch
+            mean_loss, acc = self._eval_epoch(losses)
+
+            # Save them for plotting
+            mean_losses.append(mean_loss)
+            accuracies.append(acc)
+
+            # Create table row
+            epoch = "{:05d}".format(epoch)
+            mean_loss = "{:06.3f}".format(mean_loss)
+            acc = "{:04.2f}".format(acc)
+            self.table.add_row(epoch, mean_loss, acc)
+
+        self._create_report(mean_losses, accuracies)
+        print()
+          
  
     def fit(self, X, y):
         """Find the optimal parameters.
@@ -239,14 +266,18 @@ class FFNN(Base):
         y : 1d array
           Training labels.
         """
-        
+
         self.n, self.m = X.shape
         self._preprocessing(X, y)
         self._train()
- 
+
+    def predict_proba(self, X):
+
+        return  self._arr_to_val(self._forward(X))
+
     def predict(self, X):
-        self._preprocessing(X)
-        yhat = self._forward(self.Xv)
-        getval = np.vectorize(lambda x: x.v)
-        return np.argmax(getval(yhat), axis=1)
+
+        Xv = self._arr_to_var(X)
+        probs = self.predict_proba(Xv)
+        return np.argmax(probs, axis=1)
 
