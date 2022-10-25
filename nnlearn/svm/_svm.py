@@ -13,28 +13,55 @@ class SVM:
     """
     def __init__(self, kernel):
         self.k = kernel
+        self.X = None
+        self.y = None
 
-    def fit(self):
-        pass
-
-    def predict(self):
-        pass
-
-    def _loss(self, X, a, y):
-        """Return loss
+    def fit(self, X, y):
+        """Trains SVM
 
         Attributes
         ----------
         X : 2D array
             Design matrix, i.e., matrix where each row represents a sample
 
+        y : 1D array
+            One dimensional array of size N representing true values
+            of our target variable.
+        """
+
+        self.X, self.y = X, y
+
+    def predict(self):
+        pass
+
+    def _get_jac(self, a):
+        """Calculate the Jacobian of the loss function (for the QP solver)
+
+        Attributes
+        ----------
         a : 1D array
             One dimensional array of size N where N is the number of samples.
             See notes for details.
 
-        y : 1D array
-            One dimensional array of size N representing true values
-            of our target variable.
+        Returns
+        -------
+        j : 1D array
+            Flattened jacobian matrix
+        """
+
+        a = a.reshape(1,-1)
+        yv = self.y.reshape(-1,1)
+        j = - np.ones_like(a) + a @ ((yv @ yv.T) * K)
+        return j.flatten()
+
+    def _loss(self, a):
+        """Return loss
+
+        Attributes
+        ----------
+        a : 1D array
+            One dimensional array of size N where N is the number of samples.
+            See notes for details.
 
         Returns
         -------
@@ -48,10 +75,10 @@ class SVM:
 
         # Reshape a and y such that they fit the formula for A
         a = a.reshape(1,-1)
-        yv = y.reshape(-1,1)
+        yv = self.y.reshape(-1,1)
 
         # Get A
-        K = self._gram(X)
+        K = self._gram()
         A = (a.T @ a) * (yv @ yv.T) * K
 
         # Compute the loss
@@ -60,7 +87,7 @@ class SVM:
         return loss
 
     
-    def _gram(self, X, how='less_naive'):
+    def _gram(self, how='less_naive'):
         
         """Compute the Gram matrix
         
@@ -71,9 +98,6 @@ class SVM:
 
         Attributes
         ----------
-        X : 2d array
-            Design matrix where each row represents a sample
-
         how : string
             One of following (naive, less-naive) - see notes for
             more info.
@@ -86,30 +110,30 @@ class SVM:
         """
     
         if how == 'naive':
-            return self._gram_naive(X)
+            return self._gram_naive()
         elif how == 'less_naive':
-            return self._gram_less_naive(X)
+            return self._gram_less_naive()
         else:
             text = f"{how} has not been implemented, see docs for valid input."
             raise FeatureNotImplemented(text)
  
-    def _gram_naive(self, X):
+    def _gram_naive(self):
 
-        N = X.shape[0]
+        N = self.X.shape[0]
         K = np.zeros((N, N))
         for i in range(N):
             for j in range(N):
-                K[i, j] = self.k(X[i], X[j])
+                K[i, j] = self.k(self.X[i], self.X[j])
 
         return K
     
-    def _gram_less_naive(self, X):
+    def _gram_less_naive(self):
 
         # Get all combinations of vectors
-        n = X.shape[0]
+        n = self.X.shape[0]
         i, j = np.triu_indices(n, k=0)
-        xi = X[i]
-        xj = X[j]
+        xi = self.X[i]
+        xj = self.X[j]
 
         # Compute the value using the given kernel
         result = np.zeros((n, n))

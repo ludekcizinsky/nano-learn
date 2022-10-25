@@ -63,7 +63,8 @@ def test_svm_classifier():
     # Example showing how to use loss function
     # * initial random parameters
     a0 = np.random.rand(X.shape[0])
-    initial_loss = clf._loss(X, a0, y)
+    clf.fit(X, y)
+    initial_loss = clf._loss(a0)
     print(initial_loss)
     # -- End of the section to be deleted
 
