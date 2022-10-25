@@ -28,6 +28,11 @@ class SVM:
         self.a = None
         self.b = None
 
+        # Support vectors
+        self.X_sv = None
+        self.y_sv = None
+        self.a_sv = None
+
     def fit(self, X, y):
         """Trains SVM
 
@@ -72,21 +77,53 @@ class SVM:
         a[np.isclose(a, 0)] = 0  # zero out value that are nearly zeros
         self.a = a
 
+        # Find support vectors
+        support_idx = np.where(self.a > 0)[0]
+        self.X_sv = self.X[support_idx]
+        self.y_sv = self.y[support_idx]
+        self.a_sv = self.a[support_idx]
+        print('There is in total {} support vectors'.format(len(support_idx)))
+
         # Obtain b now when you have a
         self.b = self._get_b()
         print("b is {:.3f}".format(self.b))
 
-    def predict(self):
-        pass
+    def predict(self, X):
+        """Predict output for given input X
+
+        Attributes
+        ----------
+        X : 2D array
+            Matrix where each row represents a sample.
+
+        Returns
+        -------
+        result : 1D array
+                 Raw prediction for each datapoint. Raw because we need to still
+                 decide which class the given sample belongs to.
+        """
+        
+        # Number of predictions to be made
+        M = X.shape[0]
+
+        # Compute the raw predictions
+        result = np.zeros(M)
+        for i in range(M):
+            tmp = 0
+            for j in range(self.a_sv.shape[0]):
+                tmp += self.a_sv[j]*self.y_sv[j]*(self.k(self.X_sv[j], X[i]))
+            result[i] = tmp + self.b
+        
+        return result
 
     def _get_b(self): 
-        Ns = len(self.a)
+        Ns = len(self.a_sv)
         result = 0
         for i in range(Ns):
             temp = 0
             for j in range(Ns):
-                temp += self.a[j]*self.y[j]*(self.k(self.X[i], self.X[j]))
-            result += (self.y[i] - temp)
+                temp += self.a_sv[j]*self.y_sv[j]*(self.k(self.X_sv[i], self.X_sv[j]))
+            result += (self.y_sv[i] - temp)
     
         return result/Ns
 
