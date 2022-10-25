@@ -1,6 +1,6 @@
 import os 
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath(''))
 
 from nnlearn.util import ScriptInformation
 from nnlearn.svm import SVM
@@ -30,7 +30,7 @@ def generate_data():
     # * indices of points (x,y) for which XOR(x,y) is true - needed for y
     c0 = np.where(X[:,0] < 0)
     # * indices of data points belonging to the other class - needed for y
-    c1 = np.where(X[:,0] > 0)  
+    c1 = np.where(X[:,0] > 0) 
     
     # * apply rotation on the dataset
     theta = np.radians(45)
@@ -59,14 +59,8 @@ def test_svm_classifier():
     # Initialize model
     clf = SVM(kernel=k)
     
-    # -- TODO: delete this in next commit
-    # Example showing how to use loss function
-    # * initial random parameters
-    a0 = np.random.rand(X.shape[0])
+    # Train the model
     clf.fit(X, y)
-    initial_loss = clf._loss(a0)
-    print(initial_loss)
-    # -- End of the section to be deleted
 
 if __name__ == '__main__':
     test_svm_classifier()

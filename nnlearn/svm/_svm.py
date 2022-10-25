@@ -1,6 +1,7 @@
 from nnlearn.exceptions import FeatureNotImplemented
 
 import numpy as np
+from scipy.optimize import minimize
 
 class SVM:
     """Support vector machine model
@@ -13,8 +14,11 @@ class SVM:
     """
     def __init__(self, kernel):
         self.k = kernel
+
         self.X = None
         self.y = None
+        self.K = None
+        self.a = None
 
     def fit(self, X, y):
         """Trains SVM
@@ -27,9 +31,38 @@ class SVM:
         y : 1D array
             One dimensional array of size N representing true values
             of our target variable.
+
+        Notes
+        -----
+        Constraints
+          Write the constraints in matrix notation: inequalities should be formulated as f >= 0 , equalities as f = 0
+          We have one equality constraint: a @ y.T = 0
+          We have N inequalities (one for each a_i), therefore: A @ a >= 0
         """
 
+        # Save the training data to the instance
         self.X, self.y = X, y
+        N = X.shape[0]
+
+        # Compute matrix K
+        self.K = self._gram()
+
+        # Define constraints 
+        A = np.eye(N)
+        constraints = ({'type': 'ineq', 'fun': lambda a: A @ a, 'jac': lambda a: A},
+                        {'type': 'eq', 'fun': lambda a: a @ y.T, 'jac': lambda a: y.T})
+
+        ## Train
+        a0 = np.random.rand(N)  # initial guess
+        print('Initial loss: ' + str(self._loss(a0)))
+
+        res = minimize(self._loss, a0, jac=self._get_jac, constraints=constraints, method='SLSQP', options={})
+        print('Optimized loss: ' + str(res.fun))
+        
+        # Optimal Lagrange multipliers
+        a = res.x  
+        a[np.isclose(a, 0)] = 0  # zero out value that are nearly zeros
+        self.a = a
 
     def predict(self):
         pass
@@ -51,7 +84,7 @@ class SVM:
 
         a = a.reshape(1,-1)
         yv = self.y.reshape(-1,1)
-        j = - np.ones_like(a) + a @ ((yv @ yv.T) * K)
+        j = - np.ones_like(a) + a @ ((yv @ yv.T) * self.K)
         return j.flatten()
 
     def _loss(self, a):
@@ -78,8 +111,7 @@ class SVM:
         yv = self.y.reshape(-1,1)
 
         # Get A
-        K = self._gram()
-        A = (a.T @ a) * (yv @ yv.T) * K
+        A = (a.T @ a) * (yv @ yv.T) * self.K
 
         # Compute the loss
         loss = -(np.sum(a) - 1/2*np.sum(A))
