@@ -13,12 +13,20 @@ class SVM:
              and returns single scalar value output
     """
     def __init__(self, kernel):
+
+        # Kernel function
         self.k = kernel
 
+        # Training input
         self.X = None
         self.y = None
+
+        # Matrix K used when finding model's parameters
         self.K = None
+        
+        # Model's parameters to be found
         self.a = None
+        self.b = None
 
     def fit(self, X, y):
         """Trains SVM
@@ -64,8 +72,23 @@ class SVM:
         a[np.isclose(a, 0)] = 0  # zero out value that are nearly zeros
         self.a = a
 
+        # Obtain b now when you have a
+        self.b = self._get_b()
+        print("b is {:.3f}".format(self.b))
+
     def predict(self):
         pass
+
+    def _get_b(self): 
+        Ns = len(self.a)
+        result = 0
+        for i in range(Ns):
+            temp = 0
+            for j in range(Ns):
+                temp += self.a[j]*self.y[j]*(self.k(self.X[i], self.X[j]))
+            result += (self.y[i] - temp)
+    
+        return result/Ns
 
     def _get_jac(self, a):
         """Calculate the Jacobian of the loss function (for the QP solver)
