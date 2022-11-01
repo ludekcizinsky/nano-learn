@@ -1,20 +1,11 @@
+from rich.progress import track
 import numpy as np
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_theme()
-
-from rich.table import Table
-from rich.progress import track
-from rich.columns import Columns
-from rich.panel import Panel
-from rich.markdown import Markdown
-
-from nnlearn.metrics import accuracy_score
 from nnlearn.nanograd import Var
 from nnlearn.base import GdBase
+from nnlearn.reporting import GdReport
 
-class FFNN(GdBase):
+class FFNN(GdBase, GdReport):
 
     """
     Feed forward neural network is a machine learning model which is used for all
@@ -53,7 +44,6 @@ class FFNN(GdBase):
 
     def __init__(self,
         layers,
-        logger,
         loss_func='mse',
         epochs=50,
         batch_size=1.0,
@@ -67,15 +57,12 @@ class FFNN(GdBase):
                         loss_func,
                         epochs,
                         lr)
-        
+
+        # Reporting
+        GdReport.__init__(self)
+
         # Neural network specific
         self.layers = layers
-
-        # Report specific - TODO: move to separate class
-        self.table = None
-        self.fig = None
-        self.report = None
-
  
     def _forward(self, X):
 
@@ -92,70 +79,10 @@ class FFNN(GdBase):
     def _update_weights(self):
 
         for l in self.layers:
-            l._update_weights(self.lr)
-
-    def _eval_epoch(self, losses):
-
-        # Mean loss
-        mean_loss = sum(losses)/len(losses)
-        
-        # Accuracy
-        yhat = np.argmax(self.predict_proba(self.Xv), axis=1)
-        y = self._arr_to_val(self.yv)
-        acc = accuracy_score(y, yhat)
-
-        return mean_loss, acc
-
-    def _setup_report_table(self):
-        
-        self.table = table = Table()
-        self.table.add_column("Epoch", justify="center", style="subtle")
-        self.table.add_column("Loss", justify="center", style="rose")
-        self.table.add_column("Accuracy", justify="center", style="love")
-
-    def _create_report(self, losses, accuracies):
-        
-        # Define plot
-        self.fig, axs = plt.subplots(2, 1, sharex=True)
-        plt.tight_layout();
-        self.fig.subplots_adjust(wspace=0.2, hspace=.2);
-
-        # Define epochs
-        epochs = np.arange(1, self.epochs + 1, 1)
-
-        # Epochs vs loss
-        sns.lineplot(x=epochs, y=losses, ax=axs[0], label='loss')
-        axs[0].set_title("Epoch # vs loss")
-        axs[0].set_xlabel("Epoch")
-        axs[0].set_ylabel("Loss")
-        
-        # Epochs vs accuracy
-        sns.lineplot(x=epochs, y=accuracies, ax=axs[1], label='accuracy') 
-        axs[1].set_title("Epoch # vs accuracy")
-        axs[1].set_xlabel("Epoch")
-        axs[1].set_ylabel("Accuracy")
-        
-        # Create markdown
-        md = ""
-        md += "## Hyper-parameters\n"
-        md += "Following hyper-parameters have been used:\n"
-        md += f"- Epochs: {self.epochs}\n"
-        md += f"- Loss func: {self.loss_func_name}\n"
-        md += f"- Batch size: {self.batch_size}\n"
-        md += f"- LR: {self.lr}\n"
-        md += "## Training plot\n"
-        md += "📈 See training plot [here](training.png)\n"
-
-        panel_1 = Panel.fit(self.table, title="table of training", width=35)
-        panel_2 = Panel.fit(Markdown(md), title="training information", width=35)
-        self.report = Columns([panel_1, panel_2]) 
+            l._update_weights(self.lr) 
 
     def _train(self):
-        
-        self._setup_report_table()
 
-        mean_losses = []
-        accuracies = []
         for epoch in track(range(1, self.epochs + 1), "Training..."):
             self._reshuffle()
             X_batches, y_batches = self._get_batches()
@@ -183,22 +110,12 @@ class FFNN(GdBase):
                 # Increase batch number
                 batch += 1
             
-            # Compute metrics for given epoch
-            mean_loss, acc = self._eval_epoch(losses)
+            # Epoch evaluation
+            yhat_train = np.argmax(self.predict_proba(self.Xv), axis=1)
+            y_train = self._arr_to_val(self.yv)
+            self.eval_epoch(epoch, losses, y_train, yhat_train)
 
-            # Save them for plotting
-            mean_losses.append(mean_loss)
-            accuracies.append(acc)
-
-            # Create table row
-            epoch = "{:05d}".format(epoch)
-            mean_loss = "{:06.3f}".format(mean_loss)
-            acc = "{:04.2f}".format(acc)
-            self.table.add_row(epoch, mean_loss, acc)
-
-        self._create_report(mean_losses, accuracies)
-        print()
-          
+        self.create_report(self.loss_func_name, self.batch_size, self.lr)
  
     def fit(self, X, y):
         """Find the optimal parameters.
