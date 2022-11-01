@@ -12,7 +12,6 @@ from rich.markdown import Markdown
 
 from nnlearn.metrics import mean_cross_entropy_score, mean_squared_error, accuracy_score
 from nnlearn.nanograd import Var
-from nnlearn.util import ScriptInformation
 from nnlearn.base import GdBase
 
 class FFNN(GdBase):
@@ -61,14 +60,11 @@ class FFNN(GdBase):
         shuffle=False,
         lr=.01):
 
-        GdBase.__init__(self)
+        GdBase.__init__(self, batch_size, shuffle)
 
         self.layers = layers
-        self.logger = ScriptInformation()
         self.loss_func_name = loss_func
         self.epochs = epochs
-        self.batch_size = batch_size
-        self.shuffle = shuffle
         self.lr = lr
         
         self.loss_func = None
@@ -94,44 +90,6 @@ class FFNN(GdBase):
         elif self.loss_func_name == 'cross_entropy':
             self.loss_func = mean_cross_entropy_score
  
-    def _preprocessing(self, X, y=None):
-
-        # Turn values into Var instances
-        if y is not None:
-          self.Xv, self.yv = self._arr_to_var(X), self._arr_to_var(y)
-        else:
-          self.Xv = self._arr_to_var(X)
-        
-        # If batch size is fraction, turn into actual size
-        if isinstance(self.batch_size, float):
-            self.batch_size = int(self.n*self.batch_size)
-    
-    def _get_batches(self): 
-
-        choices = set([i for i in range(self.n)])
-        X_batches = []
-        y_batches = []
-        while len(choices) > 0:
-            size = min(self.batch_size, len(choices))
-            a = np.array(list(choices))
-            selected = np.random.choice(a, size=size, replace=False)
-
-            X_batches.append(self.Xv[selected])
-            y_batches.append(self.yv[selected])
-
-            choices = choices - set(selected)
-        
-        return X_batches, y_batches
-    
-    def _reshuffle(self):
-
-        if self.shuffle:
-            rows_index = np.array([i for i in range(self.n)])
-            np.random.shuffle(rows_index) # In-place
-
-            self.Xv = self.Xv[rows_index]
-            self.yv = self.yv[rows_index]
-
     def _forward(self, X):
 
         res = X
@@ -201,8 +159,8 @@ class FFNN(GdBase):
         md += "## Training plot\n"
         md += "📈 See training plot [here](training.png)\n"
 
-        panel_1 = Panel.fit(self.table, title="table of training", width=40)
-        panel_2 = Panel.fit(Markdown(md), title="training information", width=40)
+        panel_1 = Panel.fit(self.table, title="table of training", width=35)
+        panel_2 = Panel.fit(Markdown(md), title="training information", width=35)
         self.report = Columns([panel_1, panel_2]) 
 
     def _train(self):
