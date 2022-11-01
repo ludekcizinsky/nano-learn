@@ -1,7 +1,7 @@
 from nnlearn.nanograd import Var
 import numpy as np
 
-class Base:
+class GdBase:
     """
     Base for all parametric models which are optimized via Gradient descent.
     """

@@ -13,10 +13,9 @@ from rich.markdown import Markdown
 from nnlearn.metrics import mean_cross_entropy_score, mean_squared_error, accuracy_score
 from nnlearn.nanograd import Var
 from nnlearn.util import ScriptInformation
+from nnlearn.base import GdBase
 
-from ._base import Base
-
-class FFNN(Base):
+class FFNN(GdBase):
 
     """
     Feed forward neural network is a machine learning model which is used for all
@@ -62,7 +61,7 @@ class FFNN(Base):
         shuffle=False,
         lr=.01):
 
-        Base.__init__(self)
+        GdBase.__init__(self)
 
         self.layers = layers
         self.logger = ScriptInformation()
