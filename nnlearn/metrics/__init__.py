@@ -13,9 +13,11 @@ __all__ = [
     'mean_cross_entropy_score',
     'information_gain_score',
     'error_rate',
+    'CLF_METRICS'
 
     'squared_error',
     'mean_squared_error',
     'absolute_error',
-    'mean_absolute_error'
+    'mean_absolute_error',
+    'REG_METRICS'
 ]

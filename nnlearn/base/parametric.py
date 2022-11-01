@@ -1,5 +1,7 @@
 from nnlearn.nanograd import Var
+from nnlearn.metrics import CLF_METRICS, REG_METRICS
 from nnlearn.util import ScriptInformation
+
 import numpy as np
 
 class GdBase:
@@ -7,10 +9,14 @@ class GdBase:
     Base for all parametric models which are optimized via Gradient descent.
     """
 
-    def __init__(self, batch_size, shuffle):
+    def __init__(self, batch_size, shuffle, loss_func, epochs, lr):
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.logger = ScriptInformation()
+        self.loss_func_name = loss_func
+        self.loss_func = CLF_METRICS.get(loss_func) or REG_METRICS.get(loss_func)
+        self.epochs = epochs
+        self.lr = lr
 
         self.Xv = None
         self.yv = None

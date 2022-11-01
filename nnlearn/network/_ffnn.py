@@ -10,7 +10,7 @@ from rich.columns import Columns
 from rich.panel import Panel
 from rich.markdown import Markdown
 
-from nnlearn.metrics import mean_cross_entropy_score, mean_squared_error, accuracy_score
+from nnlearn.metrics import accuracy_score
 from nnlearn.nanograd import Var
 from nnlearn.base import GdBase
 
@@ -59,36 +59,23 @@ class FFNN(GdBase):
         batch_size=1.0,
         shuffle=False,
         lr=.01):
-
-        GdBase.__init__(self, batch_size, shuffle)
-
-        self.layers = layers
-        self.loss_func_name = loss_func
-        self.epochs = epochs
-        self.lr = lr
         
-        self.loss_func = None
-        self.n = None
-        self.m = None
+        # Common attributes to models optimized via GD
+        GdBase.__init__(self,
+                        batch_size,
+                        shuffle,
+                        loss_func,
+                        epochs,
+                        lr)
+        
+        # Neural network specific
+        self.layers = layers
 
+        # Report specific - TODO: move to separate class
         self.table = None
         self.fig = None
         self.report = None
 
-        self._run_setup()
-    
-    def _run_setup(self):
-
-        """
-        The goal of this function is to run all neccessary operations
-        after client initialies this class.
-        """
-        
-        # Loss functions
-        if self.loss_func_name == 'mse':
-            self.loss_func = mean_squared_error
-        elif self.loss_func_name == 'cross_entropy':
-            self.loss_func = mean_cross_entropy_score
  
     def _forward(self, X):
 
@@ -224,7 +211,6 @@ class FFNN(GdBase):
           Training labels.
         """
 
-        self.n, self.m = X.shape
         self._preprocessing(X, y)
         self._train()
 

@@ -209,3 +209,7 @@ def error_rate(y, p):
     """
     return np.sum(y != p)
 
+# TODO: extend this for all functions
+CLF_METRICS = { 
+    "cross_entropy": mean_cross_entropy_score
+}

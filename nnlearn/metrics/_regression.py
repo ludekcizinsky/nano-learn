@@ -106,3 +106,7 @@ def mean_absolute_error(y, p):
     n = y.shape[0]
     return absolute_error(y, p)/n
 
+# TODO: extend this to all functions
+REG_METRICS = {
+        "mse": mean_squared_error
+}
