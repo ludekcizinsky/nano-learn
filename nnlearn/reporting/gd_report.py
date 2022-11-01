@@ -16,7 +16,9 @@ class GdReport:
     Report for the models optimized via gradient descent.
     """
 
-    def __init__(self):
+    def __init__(self, figpath):
+        self.figpath = figpath
+
         self.table = None
         self.fig = None
         self.report = None
@@ -73,7 +75,12 @@ class GdReport:
         axs[1].set_xlabel("Epoch")
         axs[1].set_ylabel("Accuracy")
         
+        # Save the first figure
+        fig1path = f"{self.figpath}training.png"
+        self.fig.savefig(fig1path, bbox_inches='tight')
+        
         # Create markdown
+        fig1path_md = "/".join(fig1path.split("/")[1:])
         md = ""
         md += "## Hyper-parameters\n"
         md += "Following hyper-parameters have been used:\n"
@@ -82,7 +89,7 @@ class GdReport:
         md += f"- Batch size: {batch_size}\n"
         md += f"- LR: {lr}\n"
         md += "## Training plot\n"
-        md += "📈 See training plot [here](training.png)\n"
+        md += f"📈 See training plot [here]({fig1path_md})\n"
 
         panel_1 = Panel.fit(self.table, title="table of training", width=35)
         panel_2 = Panel.fit(Markdown(md), title="training information", width=35)

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<style>
+.r1 {color: #31748f; text-decoration-color: #31748f; font-weight: bold}
+.r2 {color: #908caa; text-decoration-color: #908caa}
+.r3 {color: #008080; text-decoration-color: #008080; font-weight: bold}
+.r4 {color: #00ff00; text-decoration-color: #00ff00; font-weight: bold}
+.r5 {color: #9ccfd8; text-decoration-color: #9ccfd8}
+.r6 {color: #908caa; text-decoration-color: #908caa; font-weight: bold}
+.r7 {font-weight: bold}
+.r8 {font-weight: bold; text-decoration: underline}
+.r9 {color: #ebbcba; text-decoration-color: #ebbcba}
+.r10 {color: #eb6f92; text-decoration-color: #eb6f92}
+.r11 {color: #808000; text-decoration-color: #808000; font-weight: bold}
+.r12 {color: #0000ff; text-decoration-color: #0000ff}
+.r13 {color: #f6c177; text-decoration-color: #f6c177}
+.r14 {color: #eb6f92; text-decoration-color: #eb6f92; font-weight: bold}
+body {
+    color: #000000;
+    background-color: #ffffff;
+}
+</style>
+</head>
+<html>
+<body>
+    <code>
+        <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span class="r1">──────────────────────────────────────────────────────────────────────────────────────────────────────────── </span>🌿 FFNN - IRIS<span class="r1"> ─────────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
+<span class="r2">📆 November </span><span class="r3">01</span><span class="r2"> </span><span class="r3">2022</span><span class="r2"> </span><span class="r4">23:02:40</span>
+🐼 <span class="r2">Created by</span> <span class="r5">Ludek Cizinsky</span>
+<span class="r1">──────────────────────────────────────────────────────────────────────────────────────────────────── </span>🚧 Prepare input for the model<span class="r1"> ─────────────────────────────────────────────────────────────────────────────────────────────────────</span>
+<span class="r6">🐍 Load and split data</span>
+<span class="r6">🐍 Train test split</span>
+<span class="r6">🐍 Process the data</span>
+<span class="r6">🐍 Define the layers</span>
+<span class="r1">────────────────────────────────────────────────────────────────────────────────────────────────────────── </span>🤖 Train the model<span class="r1"> ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
+╭────── table of training ──────╮   ╭───── training information ──────╮
+│ ┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━┓ │   │                                 │
+│ ┃<span class="r7"> Epoch </span>┃<span class="r7">  Loss  </span>┃<span class="r7"> Accuracy </span>┃ │   │        <span class="r8">Hyper-parameters</span>         │
+│ ┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━┩ │   │                                 │
+│ │<span class="r2"> 00001 </span>│<span class="r9"> 03.362 </span>│<span class="r10">   0.35   </span>│ │   │ Following hyper-parameters have │
+│ │<span class="r2"> 00002 </span>│<span class="r9"> 01.550 </span>│<span class="r10">   0.82   </span>│ │   │ been used:                      │
+│ │<span class="r2"> 00003 </span>│<span class="r9"> 00.732 </span>│<span class="r10">   0.94   </span>│ │   │                                 │
+│ │<span class="r2"> 00004 </span>│<span class="r9"> 00.557 </span>│<span class="r10">   0.89   </span>│ │   │ <span class="r11"> • </span>Epochs: 50                   │
+│ │<span class="r2"> 00005 </span>│<span class="r9"> 00.497 </span>│<span class="r10">   0.92   </span>│ │   │ <span class="r11"> • </span>Loss func: cross_entropy     │
+│ │<span class="r2"> 00006 </span>│<span class="r9"> 00.476 </span>│<span class="r10">   0.94   </span>│ │   │ <span class="r11"> • </span>Batch size: 50               │
+│ │<span class="r2"> 00007 </span>│<span class="r9"> 00.440 </span>│<span class="r10">   0.94   </span>│ │   │ <span class="r11"> • </span>LR: 0.9                      │
+│ │<span class="r2"> 00008 </span>│<span class="r9"> 00.355 </span>│<span class="r10">   0.94   </span>│ │   │                                 │
+│ │<span class="r2"> 00009 </span>│<span class="r9"> 00.318 </span>│<span class="r10">   0.97   </span>│ │   │                                 │
+│ │<span class="r2"> 00010 </span>│<span class="r9"> 00.323 </span>│<span class="r10">   0.95   </span>│ │   │          <span class="r8">Training plot</span>          │
+│ │<span class="r2"> 00011 </span>│<span class="r9"> 00.284 </span>│<span class="r10">   0.94   </span>│ │   │                                 │
+│ │<span class="r2"> 00012 </span>│<span class="r9"> 00.265 </span>│<span class="r10">   0.95   </span>│ │   │ 📈 See training plot <a class="r12" href="figures/training.png">here</a>       │
+│ │<span class="r2"> 00013 </span>│<span class="r9"> 00.249 </span>│<span class="r10">   0.96   </span>│ │   ╰─────────────────────────────────╯
+│ │<span class="r2"> 00014 </span>│<span class="r9"> 00.235 </span>│<span class="r10">   0.97   </span>│ │                                      
+│ │<span class="r2"> 00015 </span>│<span class="r9"> 00.232 </span>│<span class="r10">   0.93   </span>│ │                                      
+│ │<span class="r2"> 00016 </span>│<span class="r9"> 00.248 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00017 </span>│<span class="r9"> 00.228 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00018 </span>│<span class="r9"> 00.201 </span>│<span class="r10">   0.97   </span>│ │                                      
+│ │<span class="r2"> 00019 </span>│<span class="r9"> 00.184 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00020 </span>│<span class="r9"> 00.178 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00021 </span>│<span class="r9"> 00.191 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00022 </span>│<span class="r9"> 00.287 </span>│<span class="r10">   0.89   </span>│ │                                      
+│ │<span class="r2"> 00023 </span>│<span class="r9"> 00.376 </span>│<span class="r10">   0.92   </span>│ │                                      
+│ │<span class="r2"> 00024 </span>│<span class="r9"> 00.273 </span>│<span class="r10">   0.92   </span>│ │                                      
+│ │<span class="r2"> 00025 </span>│<span class="r9"> 00.240 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00026 </span>│<span class="r9"> 00.157 </span>│<span class="r10">   0.98   </span>│ │                                      
+│ │<span class="r2"> 00027 </span>│<span class="r9"> 00.152 </span>│<span class="r10">   0.98   </span>│ │                                      
+│ │<span class="r2"> 00028 </span>│<span class="r9"> 00.146 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00029 </span>│<span class="r9"> 00.158 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00030 </span>│<span class="r9"> 00.159 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00031 </span>│<span class="r9"> 00.154 </span>│<span class="r10">   0.92   </span>│ │                                      
+│ │<span class="r2"> 00032 </span>│<span class="r9"> 00.150 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00033 </span>│<span class="r9"> 00.129 </span>│<span class="r10">   0.99   </span>│ │                                      
+│ │<span class="r2"> 00034 </span>│<span class="r9"> 00.122 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00035 </span>│<span class="r9"> 00.126 </span>│<span class="r10">   0.98   </span>│ │                                      
+│ │<span class="r2"> 00036 </span>│<span class="r9"> 00.123 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00037 </span>│<span class="r9"> 00.125 </span>│<span class="r10">   0.98   </span>│ │                                      
+│ │<span class="r2"> 00038 </span>│<span class="r9"> 00.202 </span>│<span class="r10">   0.97   </span>│ │                                      
+│ │<span class="r2"> 00039 </span>│<span class="r9"> 00.120 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00040 </span>│<span class="r9"> 00.173 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00041 </span>│<span class="r9"> 00.120 </span>│<span class="r10">   0.99   </span>│ │                                      
+│ │<span class="r2"> 00042 </span>│<span class="r9"> 00.113 </span>│<span class="r10">   0.99   </span>│ │                                      
+│ │<span class="r2"> 00043 </span>│<span class="r9"> 00.108 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00044 </span>│<span class="r9"> 00.110 </span>│<span class="r10">   0.98   </span>│ │                                      
+│ │<span class="r2"> 00045 </span>│<span class="r9"> 00.141 </span>│<span class="r10">   0.98   </span>│ │                                      
+│ │<span class="r2"> 00046 </span>│<span class="r9"> 00.134 </span>│<span class="r10">   0.97   </span>│ │                                      
+│ │<span class="r2"> 00047 </span>│<span class="r9"> 00.223 </span>│<span class="r10">   0.92   </span>│ │                                      
+│ │<span class="r2"> 00048 </span>│<span class="r9"> 00.386 </span>│<span class="r10">   0.92   </span>│ │                                      
+│ │<span class="r2"> 00049 </span>│<span class="r9"> 00.256 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ │<span class="r2"> 00050 </span>│<span class="r9"> 00.110 </span>│<span class="r10">   0.96   </span>│ │                                      
+│ └───────┴────────┴──────────┘ │                                      
+╰───────────────────────────────╯                                      
+<span class="r1">───────────────────────────────────────────────────────────────────────────────────────────────────────── </span>🔮 Validate the model<span class="r1"> ─────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
+🚥 <span class="r13">Accuracy</span>: <span class="r14">0.96</span>
+</pre>
+    </code>
+</body>
+</html>

@@ -1,9 +1,9 @@
-from rich.progress import track
 import numpy as np
+from rich.progress import track
 
+from nnlearn.reporting import GdReport
 from nnlearn.nanograd import Var
 from nnlearn.base import GdBase
-from nnlearn.reporting import GdReport
 
 class FFNN(GdBase, GdReport):
 
@@ -48,7 +48,8 @@ class FFNN(GdBase, GdReport):
         epochs=50,
         batch_size=1.0,
         shuffle=False,
-        lr=.01):
+        lr=.01,
+        figpath=""):
         
         # Common attributes to models optimized via GD
         GdBase.__init__(self,
@@ -59,30 +60,26 @@ class FFNN(GdBase, GdReport):
                         lr)
 
         # Reporting
-        GdReport.__init__(self)
+        GdReport.__init__(self, figpath)
 
-        # Neural network specific
+        # FFNN specific
         self.layers = layers
  
     def _forward(self, X):
-
         res = X
         for l in self.layers:
             res = l.step(res)
         return res
     
     def _zero_grads(self):
-
         for l in self.layers:
             l._zero_grads()
 
     def _update_weights(self):
-
         for l in self.layers:
             l._update_weights(self.lr) 
 
     def _train(self):
-
         for epoch in track(range(1, self.epochs + 1), "Training..."):
             self._reshuffle()
             X_batches, y_batches = self._get_batches()
@@ -118,25 +115,13 @@ class FFNN(GdBase, GdReport):
         self.create_report(self.loss_func_name, self.batch_size, self.lr)
  
     def fit(self, X, y):
-        """Find the optimal parameters.
-
-        Parameters
-        ----------
-        X : 2d array 
-          Training data.
-        y : 1d array
-          Training labels.
-        """
-
         self._preprocessing(X, y)
         self._train()
 
     def predict_proba(self, X):
-
         return  self._arr_to_val(self._forward(X))
 
     def predict(self, X):
-
         Xv = self._arr_to_var(X)
         probs = self.predict_proba(Xv)
         return np.argmax(probs, axis=1)
