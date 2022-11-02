@@ -59,15 +59,24 @@ class LinearRegression(GdBase, GdReport):
                 # Compute loss based on the prediction
                 loss = self.loss_func(y, yhat)
                 losses.append(loss.v)
+                
+                # --- GD update step START---
+                # Note that below three steps are equivalent to:
+                # theta_new = theta_old - alpha*gradient_of_MSE
+                # where gradient_of_MSE = (2/n)*X^T(X @ theta - y)
 
                 # reset gradients of variables to zero
                 self._zero_grads() 
 
-                # backward propagate
+                # backward propagate = compute partial derivative
+                # with respect to each variable
                 loss.backward()
 
-                # update weights
+                # update weights = make descending step
+                # where the size of the step is determined
+                # by learning rate
                 self._update_weights()
+                # --- GD update step END ---
                 
                 # Increase batch number
                 batch += 1
