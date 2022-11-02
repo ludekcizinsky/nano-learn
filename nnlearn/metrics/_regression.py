@@ -73,7 +73,7 @@ def mean_squared_error(Y, P, var=True):
 
     else:
         n = Y.shape[0]
-        return squared_error(Y, P, var)
+        return squared_error(Y, P, var)/n
 
 def absolute_error(y, p):
 

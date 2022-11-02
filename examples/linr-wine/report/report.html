@@ -26,10 +26,12 @@ body {
 <body>
     <code>
         <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span class="r1">─────────────────────────────────────────────────────────────────────────────────────────────────── </span>🍇 Linear Regression - Wine data<span class="r1"> ────────────────────────────────────────────────────────────────────────────────────────────────────</span>
-<span class="r2">📆 November </span><span class="r3">02</span><span class="r2"> </span><span class="r3">2022</span><span class="r2"> </span><span class="r4">02:04:18</span>
+<span class="r2">📆 November </span><span class="r3">02</span><span class="r2"> </span><span class="r3">2022</span><span class="r2"> </span><span class="r4">02:26:35</span>
 🐼 <span class="r2">Created by</span> <span class="r5">Ludek Cizinsky</span>
 <span class="r1">──────────────────────────────────────────────────────────────────────────────────────────────────── </span>🚧 Prepare input for the model<span class="r1"> ─────────────────────────────────────────────────────────────────────────────────────────────────────</span>
 <span class="r6">🐍 Load and split data</span>
+<span class="r6">🐍 Shuffle the data</span>
+<span class="r6">🐍 Set X to be alcohol lvl and y color intensity</span>
 <span class="r6">🐍 Train test split</span>
 <span class="r6">🐍 Process the data</span>
 <span class="r1">────────────────────────────────────────────────────────────────────────────────────────────────────────── </span>🤖 Train the model<span class="r1"> ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
@@ -37,35 +39,21 @@ body {
 │ ┏━━━━━━━┳━━━━━━━━┳━━━━━━┓ │       │                                 │
 │ ┃<span class="r7"> Epoch </span>┃<span class="r7">  Loss  </span>┃<span class="r7"> MAEr </span>┃ │       │        <span class="r8">Hyper-parameters</span>         │
 │ ┡━━━━━━━╇━━━━━━━━╇━━━━━━┩ │       │                                 │
-│ │<span class="r2"> 00001 </span>│<span class="r9"> 02.670 </span>│<span class="r10"> 0.82 </span>│ │       │ Following hyper-parameters have │
-│ │<span class="r2"> 00002 </span>│<span class="r9"> 00.727 </span>│<span class="r10"> 0.62 </span>│ │       │ been used:                      │
-│ │<span class="r2"> 00003 </span>│<span class="r9"> 00.304 </span>│<span class="r10"> 0.43 </span>│ │       │                                 │
-│ │<span class="r2"> 00004 </span>│<span class="r9"> 00.207 </span>│<span class="r10"> 0.49 </span>│ │       │ <span class="r11"> • </span>Epochs: 25                   │
-│ │<span class="r2"> 00005 </span>│<span class="r9"> 00.195 </span>│<span class="r10"> 0.33 </span>│ │       │ <span class="r11"> • </span>Loss func: mse               │
-│ │<span class="r2"> 00006 </span>│<span class="r9"> 00.142 </span>│<span class="r10"> 0.43 </span>│ │       │ <span class="r11"> • </span>Batch size: 29               │
-│ │<span class="r2"> 00007 </span>│<span class="r9"> 00.137 </span>│<span class="r10"> 0.46 </span>│ │       │ <span class="r11"> • </span>LR: 0.15                     │
-│ │<span class="r2"> 00008 </span>│<span class="r9"> 00.193 </span>│<span class="r10"> 0.28 </span>│ │       │                                 │
-│ │<span class="r2"> 00009 </span>│<span class="r9"> 00.108 </span>│<span class="r10"> 0.28 </span>│ │       │                                 │
-│ │<span class="r2"> 00010 </span>│<span class="r9"> 00.087 </span>│<span class="r10"> 0.23 </span>│ │       │          <span class="r8">Training plot</span>          │
-│ │<span class="r2"> 00011 </span>│<span class="r9"> 00.093 </span>│<span class="r10"> 0.29 </span>│ │       │                                 │
-│ │<span class="r2"> 00012 </span>│<span class="r9"> 00.093 </span>│<span class="r10"> 0.26 </span>│ │       │ 📈 See training plot <a class="r12" href="figures/training.png">here</a>       │
-│ │<span class="r2"> 00013 </span>│<span class="r9"> 00.085 </span>│<span class="r10"> 0.26 </span>│ │       ╰─────────────────────────────────╯
-│ │<span class="r2"> 00014 </span>│<span class="r9"> 00.080 </span>│<span class="r10"> 0.24 </span>│ │                                          
-│ │<span class="r2"> 00015 </span>│<span class="r9"> 00.118 </span>│<span class="r10"> 0.45 </span>│ │                                          
-│ │<span class="r2"> 00016 </span>│<span class="r9"> 00.148 </span>│<span class="r10"> 0.24 </span>│ │                                          
-│ │<span class="r2"> 00017 </span>│<span class="r9"> 00.088 </span>│<span class="r10"> 0.40 </span>│ │                                          
-│ │<span class="r2"> 00018 </span>│<span class="r9"> 00.105 </span>│<span class="r10"> 0.43 </span>│ │                                          
-│ │<span class="r2"> 00019 </span>│<span class="r9"> 00.126 </span>│<span class="r10"> 0.26 </span>│ │                                          
-│ │<span class="r2"> 00020 </span>│<span class="r9"> 00.078 </span>│<span class="r10"> 0.24 </span>│ │                                          
-│ │<span class="r2"> 00021 </span>│<span class="r9"> 00.076 </span>│<span class="r10"> 0.27 </span>│ │                                          
-│ │<span class="r2"> 00022 </span>│<span class="r9"> 00.070 </span>│<span class="r10"> 0.22 </span>│ │                                          
-│ │<span class="r2"> 00023 </span>│<span class="r9"> 00.066 </span>│<span class="r10"> 0.31 </span>│ │                                          
-│ │<span class="r2"> 00024 </span>│<span class="r9"> 00.120 </span>│<span class="r10"> 0.52 </span>│ │                                          
-│ │<span class="r2"> 00025 </span>│<span class="r9"> 00.118 </span>│<span class="r10"> 0.23 </span>│ │                                          
-│ └───────┴────────┴──────┘ │                                          
-╰───────────────────────────╯                                          
+│ │<span class="r2"> 00001 </span>│<span class="r9"> 18.493 </span>│<span class="r10"> 1.56 </span>│ │       │ Following hyper-parameters have │
+│ │<span class="r2"> 00002 </span>│<span class="r9"> 04.833 </span>│<span class="r10"> 1.45 </span>│ │       │ been used:                      │
+│ │<span class="r2"> 00003 </span>│<span class="r9"> 03.978 </span>│<span class="r10"> 1.49 </span>│ │       │                                 │
+│ │<span class="r2"> 00004 </span>│<span class="r9"> 03.958 </span>│<span class="r10"> 1.49 </span>│ │       │ <span class="r11"> • </span>Epochs: 10                   │
+│ │<span class="r2"> 00005 </span>│<span class="r9"> 03.940 </span>│<span class="r10"> 1.51 </span>│ │       │ <span class="r11"> • </span>Loss func: mse               │
+│ │<span class="r2"> 00006 </span>│<span class="r9"> 03.946 </span>│<span class="r10"> 1.51 </span>│ │       │ <span class="r11"> • </span>Batch size: 71               │
+│ │<span class="r2"> 00007 </span>│<span class="r9"> 03.944 </span>│<span class="r10"> 1.51 </span>│ │       │ <span class="r11"> • </span>LR: 0.25                     │
+│ │<span class="r2"> 00008 </span>│<span class="r9"> 03.954 </span>│<span class="r10"> 1.51 </span>│ │       │                                 │
+│ │<span class="r2"> 00009 </span>│<span class="r9"> 03.941 </span>│<span class="r10"> 1.51 </span>│ │       │                                 │
+│ │<span class="r2"> 00010 </span>│<span class="r9"> 03.945 </span>│<span class="r10"> 1.51 </span>│ │       │          <span class="r8">Training plot</span>          │
+│ └───────┴────────┴──────┘ │       │                                 │
+╰───────────────────────────╯       │ 📈 See training plot <a class="r12" href="figures/training.png">here</a>       │
+                                    ╰─────────────────────────────────╯
 <span class="r1">───────────────────────────────────────────────────────────────────────────────────────────────────────── </span>🔮 Validate the model<span class="r1"> ─────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
-🚥 <span class="r13">MSE</span>: <span class="r14">3.6739563478051167</span>
+🚥 <span class="r13">MSE</span>: <span class="r14">3.025185071755716</span>
 </pre>
     </code>
 </body>

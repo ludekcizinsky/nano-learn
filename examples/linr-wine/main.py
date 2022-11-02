@@ -1,6 +1,7 @@
 import os 
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
+import numpy as np
 
 from nnlearn.linear import LinearRegression as LR
 from nnlearn.metrics import mean_squared_error
@@ -20,10 +21,16 @@ def test_linr_regressor():
     logger.section_start(":construction: Prepare input for the model")
 
     logger.working_on("Load and split data") 
-    X, y = load_wine(return_X_y=True)
+    X, _ = load_wine(return_X_y=True)
+
+    logger.working_on("Shuffle the data")
+    idx = np.random.choice(X.shape[0], X.shape[0], replace=False)
+
+    logger.working_on("Set X to be alcohol lvl and y color intensity")
+    X, y = X[:, [0]], X[:, 9]
 
     logger.working_on("Train test split")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     m = X_train.shape[1]
 
     logger.working_on("Process the data")
@@ -34,10 +41,10 @@ def test_linr_regressor():
     logger.section_start(":robot: Train the model")
     figpath = "report/figures/"
     clf = LR(optimizer='gd_backp',
-             epochs = 25,
+             epochs = 10,
              loss_func='mse',
-             batch_size=.25,
-             lr=.15,
+             batch_size=.5,
+             lr=.25,
              shuffle=True,
              bias=True,
              figpath=figpath)
