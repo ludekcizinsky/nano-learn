@@ -9,8 +9,9 @@ functions are defined:
 """
 
 import numpy as np
+from nnlearn.nanograd import Var
 
-def squared_error(y, p):
+def squared_error(y, p, var):
     """Squared error.
 
     Sqaured error can be defined as follows:
@@ -38,17 +39,20 @@ def squared_error(y, p):
     -----
     Usually used for regression problems.
     """
-    return np.sum((y - p)**2)
+    if var:
+        return (y - p).sqr()
+    else:
+        return np.sum((y - p)**2)
 
-def mean_squared_error(y, p):
+def mean_squared_error(Y, P, var=True):
     """Mean of squared error
 
     Parameters
     ----------
-    y : :class:`ndarray`
+    Y : :class:`ndarray`
         One dimensional array with ground truth values.
     
-    p : :class:`ndarray`
+    P : :class:`ndarray`
         One dimensional array with predicted values.
 
     Returns
@@ -56,8 +60,20 @@ def mean_squared_error(y, p):
     float
         Mean squared error.
     """
-    n = y.shape[0]
-    return squared_error(y, p)/n
+
+    if var:
+        n = Var(Y.shape[0])
+        total = Var(0)
+        for i in range(n.v):
+          y = Y[i] # true class
+          yhat = P[i]
+          total += squared_error(y, yhat, var)
+
+        return total/n
+
+    else:
+        n = Y.shape[0]
+        return squared_error(Y, P, var)
 
 def absolute_error(y, p):
 

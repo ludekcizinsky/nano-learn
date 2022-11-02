@@ -60,7 +60,7 @@ class FFNN(GdBase, GdReport):
                         lr)
 
         # Reporting
-        GdReport.__init__(self, figpath)
+        GdReport.__init__(self, figpath, 'clf')
 
         # FFNN specific
         self.layers = layers

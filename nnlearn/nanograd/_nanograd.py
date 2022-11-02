@@ -59,6 +59,9 @@ class Var:
     def exp(self) -> 'Var':
         return Var(np.exp(self.v), [(self, np.exp(self.v))])
 
+    def sqr(self) -> 'Var':
+        return Var(self.v**2, [(self, 2*self.v)])
+
     def __repr__(self):
         return "Var(v=%.4f, grad=%.4f)" % (self.v, self.grad)
 
